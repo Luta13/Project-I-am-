@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style>
+        .comment_container_wrapper {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .comment_container {
+            width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: self-start;
+            justify-content: center;
+        }
+
+        .comment_container #comment_name {
+            height: 20px;
+            padding-bottom: -25px;
+        }
+
+        .comment_container #comment_password {
+            height: 20px;
+            width: 280px;
+            padding-bottom: -25px;
+        }
+
+        .comment_container #comment_name_txt {
+            font-size: 15px;
+
+            padding: 0.2rem .75rem;
+        }
+
+        .comment_container .comment_area {
+            width: 100%;
+        }
+
+        .comment_container .btn_area {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .comment_container .btn_area .btn {
+            width: 100px;
+        }
+
+        .comment {
+            width: 500px;
+            text-align: left;
+            margin: 20px auto 0px auto;
+            border-radius: 5px;
+            padding: 5px;
+            box-shadow: 0px 0px 10px gray;
+        }
+
+        .comment_container .comment_writer_info {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: -10px;
+        }
+
+        .comment_info {
+            display: flex;
+            justify-content: space-between;
+            text-align: center;
+        }
+
+
+        .comment_info>p {
+            margin: 0;
+        }
+
+        .comment_list_name {
+            font-weight: bold;
+        }
+
+        .comment_created_time {
+            color: gray;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .comment_text_wrapper {
+            margin: 10px auto 10px auto;
+        }
+
+        .empty_comment {
+            margin: 20px auto 20px auto;
+            width: 100%;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty_comment > p {
+            text-align: center;
+            font-size: large;
+            font-weight: bold;
+            color: rgb(191, 191, 191);
+        }
+
+        .delete_btn_wrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px
+        }
+
+        .delete_btn_wrapper .btn {
+            height: 30px;
+            display: flex;
+            align-items: center;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="comment_container_wrapper">
+        <div class="comment_container">
+            <div class="comment_writer_info">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="comment_name" placeholder="@@@">
+                    <label for="floatingInputDisabled" id="comment_name_txt">Name</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control" id="comment_password" placeholder="@@@">
+                    <label for="floatingInputDisabled" id="comment_name_txt">Password</label>
+                </div>
+            </div>
+            <div class="form-floating mb-3 comment_area">
+                <textarea class="form-control" placeholder="Leave a comment here" style="height: 100px"
+                    id="comment_area"></textarea>
+                <label for="floatingTextarea2Disabled">Comments</label>
+            </div>
+            <div class="btn_area">
+                <input class="btn btn-primary" id="submit" type="submit" value="등록">
+            </div>
+        </div>
+        <div class="comment_list" id="comment_list">
+            <div class="empty_comment" style="display: none;">
+                <p>방명록을 작성해주세요</p>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getCountFromServer, collection, addDoc, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+        // Firebase 구성 정보 설정
+        const firebaseConfig = {
+            // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+            apiKey: "AIzaSyDm2_7DgKgJb6T0LdnliIyYCW3kmpiWWfQ",
+            authDomain: "sparta-6c010.firebaseapp.com",
+            projectId: "sparta-6c010",
+            storageBucket: "sparta-6c010.appspot.com",
+            messagingSenderId: "447080136072",
+            appId: "1:447080136072:web:7402387e7779515cd34e3d",
+            measurementId: "G-864293NVT8"
+        };
+
+        // Firebase 인스턴스 초기화
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        /*--------------- db에 추가 ---------------*/
+        addSubmitEventListener();
+       
+
+        /*--------------- db에 없으면 문구 나오게  ---------------*/
+        let docs = await getDocs(collection(db, "comments"));
+
+
+        const collectionRef = collection(db, "comments");
+        const snapshot = await getCountFromServer(collectionRef);
+        const count = snapshot.data().count;
+
+        if (count == 0) {
+            $(".empty_comment").show();
+        }
+        else {
+            $(".empty_comment").hide();
+        }
+
+        /*--------------- db 댓글 불러오기  ---------------*/
+        loadComments(docs);
+       
+
+        /*--------------- 댓글 db에서 삭제 이벤트 등록 ---------------*/
+        addDeleteEventListener();
+
+        /*--------------- 함수 구현 부 ---------------*/
+        function loadComments(docs){
+            docs.forEach((doc) => {
+            let row = doc.data();
+            let name = row['name']
+            let password = row['password']
+            let contents = row['contents']
+            let time = row['time']
+
+
+            $('#comment_list').append(
+                `
+                <div class="comment">
+                    <div class="comment_info">
+                        <p>작성자: <span class="comment_list_name">${name}</span></p>
+                        <span class="comment_created_time">${time}</span>
+                    </div>
+                    <div
+                        style="width: 100%; height: 2px; background-color: rgb(183, 183, 183); opacity: 0.5; border-radius: 2px;">
+                    </div>
+                    <div class="comment_text_wrapper"><span class="comment_text">${contents}</span></div>
+                    <div class="delete_btn_wrapper">
+                        <button type="button" class="btn btn-primary delete" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">삭제</button>
+                    </div>
+                </div>
+            `)
+        });
+        }
+
+        function addSubmitEventListener(){
+            $("#submit").click(async function () {
+            const name = $("#comment_name").val();
+            const password = $("#comment_password").val();
+            const contents = $("#comment_area").val();
+            let boolean = true;
+            let today = new Date();
+            const time = today.toLocaleString();
+            const doc = {
+                'name': name,
+                'password': password,
+                'contents': contents,
+                'time': time,
+            };
+            if (name === "" || contents === "") {
+                alert("이름 혹은 내용이 비어있습니다.");
+                return;
+            }
+
+            await addDoc(collection(db, "comments"), doc);
+            alert('저장 완료!');
+            window.location.reload();
+        });
+        }
+
+        function addDeleteEventListener(){
+            $(".delete").click(async function (e) {
+            var ok = window.confirm("삭제하시겠습니까?");
+            var getpass = prompt("비밀번호를 입력하세요.");
+            if (ok) {
+        
+                let writer = e.target.parentElement.parentElement.children[0].children[0].children[0].textContent;
+                let contents = e.target.parentElement.parentElement.children[2].children[0].textContent;
+                let password = "";
+                let createdTime = ""
+                let del = null;
+                let id = "";
+
+                docs.forEach(element => {
+                    let row = element.data();
+                    console.log(element)
+                    if (row['name'] === writer && row['contents'] === contents && getpass === row['password']) {
+                        password = password;
+                        del = element;
+                        createdTime = row['time'];
+                        id = element.id;
+                        return;
+                    }
+                });
+
+                if(del==null){
+                    alert('비밀번호가 다릅니다.');
+                    return;
+                } 
+
+                alert('삭제 완료!');
+                await deleteDoc(doc(db, "comments", id.toString()));
+                window.location.reload();
+            }
+        });
+        }
+    </script>
+</body>
+
+</html>
