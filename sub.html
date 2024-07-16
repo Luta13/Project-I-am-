@@ -81,9 +81,8 @@
         // Firebase SDK 라이브러리 가져오기
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-        import { collection, addDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-        //import { getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-        import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getCountFromServer, collection, addDoc, doc, getDoc, updateDoc, setDoc, deleteDoc  } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         // Firebase 구성 정보 설정
         // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -163,6 +162,164 @@
 
             });
         });
+        
+                /*-------------------------------------- 방명록 스크립트 -------------------------------------------*/
+        // 쿼리스트링 파싱
+        const url = new URL(location.href);
+        const urlParams = url.searchParams;
+        const currentId = urlParams.get("id")
+        console.log(currentId)
+
+        const snapshot = await getCountFromServer(collection(db, "comments"));
+        const count = snapshot.data().count;
+
+        /*--------------- db에 없으면 문구 나오게  ---------------*/
+        if (count == 0) {
+            $(".empty_comment").show();
+        }
+        else {
+            $(".empty_comment").hide();
+        }
+
+        /*--------------- 댓글 등록 이벤트 등록 ---------------*/
+        addSubmitEventListener();
+
+        /*--------------- db 댓글 불러오기  ---------------*/
+        await loadComments(currentId);
+
+        /*--------------- 댓글 삭제 이벤트 등록  ---------------*/
+        addDeleteEventListener($('.delete'));
+
+        /*--------------- 함수 구현 부 ---------------*/
+        function getCollectionRef() {
+            return collection(db, "comments");
+        }
+
+        async function loadComments(id) {
+            let docSnap = await getDoc(doc(getCollectionRef(), id));
+            console.log(docSnap)
+            let data = docSnap.data();
+            if (data['comment_list'] != null) {
+                data['comment_list'].forEach(row => {
+                    let name = row['name']
+                    let password = row['password']
+                    let contents = row['contents']
+                    let time = row['time']
+
+
+                    $('#comment_list').append(
+                        `
+                <div class="comment">
+                    <div class="comment_info">
+                        <p>작성자: <span class="comment_list_name">${name}</span></p>
+                        <span class="comment_created_time">${time}</span>
+                    </div>
+                    <div
+                        style="width: 100%; height: 2px; background-color: rgb(183, 183, 183); opacity: 0.5; border-radius: 2px;">
+                    </div>
+                    <div class="comment_text_wrapper"><span class="comment_text">${contents}</span></div>
+                    <div class="delete_btn_wrapper">
+                        <button class="delete-button delete">
+                            <svg class="delete-svgIcon" viewBox="0 0 448 512">
+                                <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `);
+                });
+            }
+
+        }
+
+        function addSubmitEventListener() {
+            $("#submit").click(async function () {
+                const name = $("#comment_name").val();
+                const password = $("#comment_password").val();
+                const contents = $("#comment_area").val();
+                let boolean = true;
+                let today = new Date();
+                const time = today.toLocaleString();
+
+                let dic = {
+                    'name': name,
+                    'password': password,
+                    'contents': contents,
+                    'time': time,
+                };
+
+                const docRef = doc(getCollectionRef(), currentId);
+                if (docRef == null) return;
+
+                const docSnap = await getDoc(docRef);
+                if (name === "" || contents === "") {
+                    alert("이름 혹은 내용이 비어있습니다.");
+                    return;
+                }
+
+                console.log(docSnap)
+                const numberOfKeys = Object.keys(docSnap.data()).length;
+                let list = [];
+                console.log(numberOfKeys)
+                if (numberOfKeys === 0) {
+                    list.push(dic);
+                    let newDoc = {
+                        'comment_list': list
+                    }
+                    await updateDoc(docRef, newDoc);
+                }
+                else {
+                    list = docSnap.data()['comment_list'];
+                    list.push(dic);
+                    let newDoc = {
+                        'comment_list': list
+                    }
+                    await updateDoc(docRef, newDoc);
+                }
+
+                alert('저장 완료!');
+                window.location.reload();
+                return;
+            });
+        }
+
+        function addDeleteEventListener(node) {
+            node.off().on('click', async function (e) {
+                var ok = window.confirm("삭제하시겠습니까?");
+                var getpass = prompt("비밀번호를 입력하세요.");
+
+                if (ok) {
+                    let writer = e.currentTarget.parentElement.parentElement.children[0].children[0].children[0].textContent;
+                    let contents = e.currentTarget.parentElement.parentElement.children[2].children[0].textContent;
+                    let password = "";
+                    let createdTime = ""
+                    let del = null;
+                    let docRef = doc(getCollectionRef(), currentId);
+                    let docSnap = await getDoc(docRef);
+                    let commentList = docSnap.data()['comment_list'];
+                    let find = -1
+                    for (let i = commentList.length - 1; i >= 0; --i) {
+                        if (commentList[i]['name'] === writer && commentList[i]['contents'] === contents && getpass === commentList[i]['password']) {
+                            find = i;
+                            break;
+                        }
+                    }
+
+                    if (find == -1) {
+                        alert('비밀번호가 다릅니다.');
+                        return;
+                    }
+
+                    commentList.splice(find, 1);
+                    let newDoc = {
+                        'comment_list': commentList
+                    }
+                    alert('삭제 완료!');
+                    await updateDoc(docRef, newDoc);
+                    window.location.reload();
+                }
+            });
+        }
     </script>
 
 </head>
