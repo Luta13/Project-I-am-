@@ -112,7 +112,7 @@
             justify-content: center;
         }
 
-        .empty_comment > p {
+        .empty_comment>p {
             text-align: center;
             font-size: large;
             font-weight: bold;
@@ -164,11 +164,11 @@
             </div>
         </div>
     </div>
-    
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-        import { getCountFromServer, collection, addDoc, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getCountFromServer, collection, addDoc, doc, getDoc, updateDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
         import { getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         // Firebase 구성 정보 설정
@@ -187,18 +187,18 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        /*--------------- db에 추가 ---------------*/
-        addSubmitEventListener();
-       
-
-        /*--------------- db에 없으면 문구 나오게  ---------------*/
-        let docs = await getDocs(collection(db, "comments"));
 
 
-        const collectionRef = collection(db, "comments");
-        const snapshot = await getCountFromServer(collectionRef);
+
+        // 쿼리스트링 파싱
+        const url = new URL(location.href);
+        const urlParams = url.searchParams;
+        const currentId = urlParams.get("id")
+
+        const snapshot = await getCountFromServer(collection(db, "comments"));
         const count = snapshot.data().count;
 
+        /*--------------- db에 없으면 문구 나오게  ---------------*/
         if (count == 0) {
             $(".empty_comment").show();
         }
@@ -206,25 +206,39 @@
             $(".empty_comment").hide();
         }
 
-        /*--------------- db 댓글 불러오기  ---------------*/
-        loadComments(docs);
-       
+        /*--------------- 댓글 등록 이벤트 등록 ---------------*/
+        addSubmitEventListener();
 
-        /*--------------- 댓글 db에서 삭제 이벤트 등록 ---------------*/
-        addDeleteEventListener();
+        /*--------------- db 댓글 불러오기  ---------------*/
+        await loadComments(currentId);
+        
+        /*--------------- 댓글 삭제 이벤트 등록  ---------------*/
+        addDeleteEventListener($('.delete'));
+
+
+
+
+
 
         /*--------------- 함수 구현 부 ---------------*/
-        function loadComments(docs){
-            docs.forEach((doc) => {
-            let row = doc.data();
-            let name = row['name']
-            let password = row['password']
-            let contents = row['contents']
-            let time = row['time']
+        function getCollectionRef(){
+            return collection(db, "comments");
+        }
+
+        async function loadComments(id) {
+            let docSnap = await getDoc(doc(getCollectionRef(), id));
+            console.log(docSnap)
+            let data = docSnap.data();
+
+            data['comment_list'].forEach(row => {
+                let name = row['name']
+                let password = row['password']
+                let contents = row['contents']
+                let time = row['time']
 
 
-            $('#comment_list').append(
-                `
+                $('#comment_list').append(
+                    `
                 <div class="comment">
                     <div class="comment_info">
                         <p>작성자: <span class="comment_list_name">${name}</span></p>
@@ -238,70 +252,100 @@
                         <button type="button" class="btn btn-primary delete" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">삭제</button>
                     </div>
                 </div>
-            `)
-        });
+            `);
+            });
         }
 
-        function addSubmitEventListener(){
+        function addSubmitEventListener() {
             $("#submit").click(async function () {
-            const name = $("#comment_name").val();
-            const password = $("#comment_password").val();
-            const contents = $("#comment_area").val();
-            let boolean = true;
-            let today = new Date();
-            const time = today.toLocaleString();
-            const doc = {
-                'name': name,
-                'password': password,
-                'contents': contents,
-                'time': time,
-            };
-            if (name === "" || contents === "") {
-                alert("이름 혹은 내용이 비어있습니다.");
-                return;
-            }
+                const name = $("#comment_name").val();
+                const password = $("#comment_password").val();
+                const contents = $("#comment_area").val();
+                let boolean = true;
+                let today = new Date();
+                const time = today.toLocaleString();
 
-            await addDoc(collection(db, "comments"), doc);
-            alert('저장 완료!');
-            window.location.reload();
-        });
+                let dic = {
+                    'name': name,
+                    'password': password,
+                    'contents': contents,
+                    'time': time,
+                };
+
+
+
+
+                const docRef = doc(getCollectionRef(), currentId);
+                if (docRef == null) return;
+
+                const docSnap = await getDoc(docRef);
+                if (name === "" || contents === "") {
+                    alert("이름 혹은 내용이 비어있습니다.");
+                    return;
+                }
+
+                console.log(docSnap)
+                const numberOfKeys = Object.keys(docSnap.data()).length;
+                let list = [];
+                console.log(numberOfKeys)
+                if (numberOfKeys === 0) {
+                    list.push(dic);
+                    let newDoc = {
+                        'comment_list': list
+                    }
+                    await updateDoc(docRef, newDoc);
+                }
+                else {
+                    list = docSnap.data()['comment_list'];
+                    list.push(dic);
+                    let newDoc = {
+                        'comment_list': list
+                    }
+                    await updateDoc(docRef, newDoc);
+                }
+
+                alert('저장 완료!');
+                window.location.reload();
+                return;
+            });
         }
 
-        function addDeleteEventListener(){
-            $(".delete").click(async function (e) {
-            var ok = window.confirm("삭제하시겠습니까?");
-            var getpass = prompt("비밀번호를 입력하세요.");
-            if (ok) {
-        
-                let writer = e.target.parentElement.parentElement.children[0].children[0].children[0].textContent;
-                let contents = e.target.parentElement.parentElement.children[2].children[0].textContent;
-                let password = "";
-                let createdTime = ""
-                let del = null;
-                let id = "";
+        function addDeleteEventListener(node) {
+            node.click(async function (e) {
+                var ok = window.confirm("삭제하시겠습니까?");
+                var getpass = prompt("비밀번호를 입력하세요.");
+                if (ok) {
 
-                docs.forEach(element => {
-                    let row = element.data();
-                    console.log(element)
-                    if (row['name'] === writer && row['contents'] === contents && getpass === row['password']) {
-                        password = password;
-                        del = element;
-                        createdTime = row['time'];
-                        id = element.id;
+                    let writer = e.target.parentElement.parentElement.children[0].children[0].children[0].textContent;
+                    let contents = e.target.parentElement.parentElement.children[2].children[0].textContent;
+                    let password = "";
+                    let createdTime = ""
+                    let del = null;
+                    let docRef = doc(getCollectionRef(), currentId);
+                    let docSnap = await getDoc(docRef);
+                    let commentList = docSnap.data()['comment_list'];
+                    let find = -1
+                    for (let i = commentList.length - 1; i >= 0; --i) {
+                        if (commentList[i]['name'] === writer && commentList[i]['contents'] === contents && getpass === commentList[i]['password']) {
+                            find = i;
+                            break;
+                        }
+                    }
+
+                    if (find == -1) {
+                        alert('비밀번호가 다릅니다.');
                         return;
                     }
-                });
 
-                if(del==null){
-                    alert('비밀번호가 다릅니다.');
-                    return;
-                } 
-
-                alert('삭제 완료!');
-                await deleteDoc(doc(db, "comments", id.toString()));
-                window.location.reload();
-            }
-        });
+                    commentList.splice(find, 1);
+                    let newDoc = {
+                        'comment_list': commentList
+                    }
+                    alert('삭제 완료!');
+                    await updateDoc(docRef, newDoc);
+                    window.location.reload();
+                }
+            });
         }
     </script>
 </body>
