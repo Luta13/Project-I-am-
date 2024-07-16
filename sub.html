@@ -2,18 +2,18 @@
 <html lang="ko">
 
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width">
-	<title>Project IAM</title>
-	<!-- <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico"> -->
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-	<!-- css -->
-	<link rel="stylesheet" href="resource/css/main.css">
-	<link rel="stylesheet" href="resource/css/sub.css">
-	<link rel="stylesheet" href="resource/css/reset.css">
-	<!-- //css -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Project IAM</title>
+    <!-- <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico"> -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- css -->
+    <link rel="stylesheet" href="resource/css/main.css">
+    <link rel="stylesheet" href="resource/css/sub.css">
+    <link rel="stylesheet" href="resource/css/reset.css">
+    <!-- //css -->
 
     <!-- script -->
     <!-- //script -->
@@ -31,13 +31,13 @@
             margin: 30px 50px 0px 0px;
         }
 
-		.postingbox {
+        .postingbox {
 
-			width: 500px;
-			margin: 30px auto 0px auto;
-			padding: 20px;
-			box-shadow: 0px 0px 3px 0px green;
-		}
+            width: 500px;
+            margin: 30px auto 0px auto;
+            padding: 20px;
+            box-shadow: 0px 0px 3px 0px green;
+        }
 
         .mybtn {
             display: flex;
@@ -46,18 +46,18 @@
             justify-content: center;
         }
 
-		.mybtn>button {
-			margin-right: 10px;
-		}
-	</style>
+        .mybtn>button {
+            margin-right: 10px;
+        }
+    </style>
 
-	<script type="module">
-		// Firebase SDK 라이브러리 가져오기
-		import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-		import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-		import { collection, addDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-		//import { getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-		import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    <script type="module">
+        // Firebase SDK 라이브러리 가져오기
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { collection, addDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        //import { getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         // Firebase 구성 정보 설정
         // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -77,9 +77,9 @@
         const db = getFirestore(app);
 
 
-		// member0,1,2,3,4 까지 변경하면 인원별로 변경됨
-		const memDoc = await getDoc(doc(db, 'iam', 'member4'));
-		const memData = memDoc.data();
+        // member0,1,2,3,4 까지 변경하면 인원별로 변경됨
+        const memDoc = await getDoc(doc(db, 'iam', 'member4'));
+        const memData = memDoc.data();
 
         console.log(memData);
 
@@ -91,49 +91,50 @@
         var goal = document.getElementById("goal");
         var github_add = document.getElementById("github_add");
 
-		name.innerText = memData['name'];
-		birth.innerText = memData['birthday'];
-		mbti.innerText = memData['mbti'];
-		introduce.innerText = memData['introduce'];
-		motivation.innerText = memData['motivation'];
-		goal.innerText = memData['goal'];
-		github_add.innerText = memData['github_add'];
-		blog_add.innerText = memData['blog_add'];
+        name.innerText = memData['name'];
+        birth.innerText = memData['birthday'];
+        mbti.innerText = memData['mbti'];
+        introduce.innerText = memData['introduce'];
+        motivation.innerText = memData['motivation'];
+        goal.innerText = memData['goal'];
+        github_add.innerText = memData['github_add'];
+        blog_add.innerText = memData['blog_add'];
 
 
-		$(document).ready(function () {
-			$("#editButton").click(async function () {
-				$('#editview').toggle();
-			});
-			$("#closeButton").click(async function () {
-				$('#editview').toggle();
-			});
-			$("#postingButton").click(async function () {
+        $(document).ready(function () {
+            
+            $("#editButton").click(async function () {
+                $('#editview').toggle();
+            });
+            $("#closeButton").click(async function () {
+                $('#editview').toggle();
+            });
+            $("#postingButton").click(async function () {
 
-				let input_name = $("#input_name").val();
-				let input_birth = $("#input_birthday").val();
-				let input_mbti = $("#input_mbti").val();
-				let input_introduce = $("#input_introduce").val();
-				let input_motivation = $("#input_motivation").val();
-				let input_goal = $("#input_goal").val();
-				let input_github_add = $("#input_github_add").val();
-				let input_blog_add = $("#input_blog_add").val();
+                let input_name = $("#input_name").val();
+                let input_birth = $("#input_birthday").val();
+                let input_mbti = $("#input_mbti").val();
+                let input_introduce = $("#input_introduce").val();
+                let input_motivation = $("#input_motivation").val();
+                let input_goal = $("#input_goal").val();
+                let input_github_add = $("#input_github_add").val();
+                let input_blog_add = $("#input_blog_add").val();
 
-				await setDoc(doc(db, "iam", "member4"), {
-					name: input_name,
-					birthday: input_birth,
-					mbti: input_mbti,
-					introduce: input_introduce,
-					motivation: input_motivation,
-					goal: input_goal,
-					github_add: input_github_add,
-					blog_add: input_blog_add
-				})
-				alert("saved!");
-				window.location.reload();
-			});
-		});
-	</script>
+                await setDoc(doc(db, "iam", "member4"), {
+                    name: input_name,
+                    birthday: input_birth,
+                    mbti: input_mbti,
+                    introduce: input_introduce,
+                    motivation: input_motivation,
+                    goal: input_goal,
+                    github_add: input_github_add,
+                    blog_add: input_blog_add
+                })
+                alert("saved!");
+                window.location.reload();
+            });
+        });
+    </script>
 
 </head>
 
@@ -145,14 +146,14 @@
                 <div class="img"><img src="resource/img/img1.png" alt=""></div>
                 <div class="text">
                     <ul>
-                        <li><strong>이름</strong><em id="name">누구</em></li><br>
-                        <li><strong>생년월일</strong><em id="birthday" class="birthdate">1999.02.05</em></li><br>
-                        <li><strong>MBTI</strong><em id="mbti" class="mbti">ISTP</em></li><br>
-                        <li><strong>소개</strong><em id="introduce" class="introduce">안녕하세요</em></li><br>
-                        <li><strong>동기</strong><em id="motivation" class="motive">안녕하세요</em></li><br>
-                        <li><strong>목표</strong><em id="goal" class="goal">안녕하세요</em></li><br>
-                        <li><strong>깃허브</strong><em id="github_add" class="github">안녕하세요</em></li><br>
-                        <li><strong>블로그</strong><em id="blog_add" class="blog">안녕하세요</em></li>
+                        <li><strong>이름</strong><em id="name"></em></li><br>
+                        <li><strong>생년월일</strong><em id="birthday" class="birthdate"></em></li><br>
+                        <li><strong>MBTI</strong><em id="mbti" class="mbti"></em></li><br>
+                        <li><strong>소개</strong><em id="introduce" class="introduce"></em></li><br>
+                        <li><strong>동기</strong><em id="motivation" class="motive"></em></li><br>
+                        <li><strong>목표</strong><em id="goal" class="goal"></em></li><br>
+                        <li><strong>깃허브</strong><em id="github_add" class="github"></em></li><br>
+                        <li><strong>블로그</strong><em id="blog_add" class="blog"></em></li>
 
 
                     </ul>
@@ -174,87 +175,47 @@
             </ul>
 
 
-		</div>
-	</div>
-	</div>
+        </div>
+    </div>
+    </div>
 
-	<div class="postingbox" id="editview">
-		<div class="form-floating mb-3">
-			<input type="text" class="form-control" id="input_name" placeholder="이름">
-			<label for="floatingInput">이름</label>
-		</div>
-		<div class="form-floating mb-3">
-			<input type="text" class="form-control" id="input_birthday" placeholder="생년월일">
-			<label for="floatingInput">생년월일</label>
-		</div>
-		<div class="form-floating mb-3">
-			<input type="text" class="form-control" id="input_mbti" placeholder="MBTI">
-			<label for="floatingInput">MBTI</label>
-		</div>
-		<div class="form-floating mb-3">
-			<input type="text" class="form-control" id="input_introduce" placeholder="소개">
-			<label for="floatingInput">소개</label>
-		</div>
-		<div class="form-floating mb-3">
-			<input type="text" class="form-control" id="input_motivation" placeholder="동기">
-			<label for="floatingInput">동기</label>
-		</div>
-		<div class="form-floating mb-3">
-			<input type="text" class="form-control" id="input_goal" placeholder="목표">
-			<label for="floatingInput">목표</label>
-		</div>
-		<div class="form-floating mb-3">
-			<input type="text" class="form-control" id="input_github_add" placeholder="깃허브">
-			<label for="floatingInput">깃허브</label>
-		</div>
-		<div class="form-floating mb-3">
-			<input type="text" class="form-control" id="input_blog_add" placeholder="블로그">
-			<label for="floatingInput">블로그</label>
-		</div>
-
-		<div class="mybtn">
-			<button type="button" class="btn btn-dark" id="postingButton">완료</button>
-			<button type="button" class="btn btn-outline-dark" id="closeButton">닫기</button>
-		</div>
-	</div>
-
-    <div class="postingbox" id="editview">
+    <div class="postingbox" id="editview" style="display : none;">
         <div class="form-floating mb-3">
-            <input type="email" class="form-control" id="image" placeholder="이름">
+            <input type="text" class="form-control" id="input_name" placeholder="이름">
             <label for="floatingInput">이름</label>
         </div>
         <div class="form-floating mb-3">
-            <input type="email" class="form-control" id="title" placeholder="생년월일">
+            <input type="text" class="form-control" id="input_birthday" placeholder="생년월일">
             <label for="floatingInput">생년월일</label>
         </div>
         <div class="form-floating mb-3">
-            <input type="email" class="form-control" id="content" placeholder="MBTI">
+            <input type="text" class="form-control" id="input_mbti" placeholder="MBTI">
             <label for="floatingInput">MBTI</label>
         </div>
         <div class="form-floating mb-3">
-            <input type="email" class="form-control" id="date" placeholder="소개">
+            <input type="text" class="form-control" id="input_introduce" placeholder="소개">
             <label for="floatingInput">소개</label>
         </div>
         <div class="form-floating mb-3">
-            <input type="email" class="form-control" id="date" placeholder="동기">
+            <input type="text" class="form-control" id="input_motivation" placeholder="동기">
             <label for="floatingInput">동기</label>
         </div>
         <div class="form-floating mb-3">
-            <input type="email" class="form-control" id="date" placeholder="목표">
+            <input type="text" class="form-control" id="input_goal" placeholder="목표">
             <label for="floatingInput">목표</label>
         </div>
         <div class="form-floating mb-3">
-            <input type="email" class="form-control" id="date" placeholder="깃허브">
+            <input type="text" class="form-control" id="input_github_add" placeholder="깃허브">
             <label for="floatingInput">깃허브</label>
         </div>
         <div class="form-floating mb-3">
-            <input type="email" class="form-control" id="date" placeholder="블로그">
+            <input type="text" class="form-control" id="input_blog_add" placeholder="블로그">
             <label for="floatingInput">블로그</label>
         </div>
 
         <div class="mybtn">
-            <button type="button" class="btn btn-dark" id="postingbtn">완료</button>
-            <button type="button" class="btn btn-outline-dark">닫기</button>
+            <button type="button" class="btn btn-dark" id="postingButton">완료</button>
+            <button type="button" class="btn btn-outline-dark" id="closeButton">닫기</button>
         </div>
     </div>
 
