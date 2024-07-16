@@ -80,6 +80,11 @@
 		// member0,1,2,3,4 까지 변경하면 인원별로 변경됨
 		const memDoc = await getDoc(doc(db, 'iam', 'member4'));
 		const memData = memDoc.data();
+=======
+        // member0,1,2,3,4 까지 변경하면 인원별로 변경됨
+        const memDoc = await getDoc(doc(db, 'iam', 'member0'));
+        const memData = memDoc.data();
+>>>>>>> 4135170484a2dffd5c0ef6bcaaa9c086b25cb3e1
 
 		console.log(memData);
 
