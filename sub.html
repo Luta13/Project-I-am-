@@ -23,8 +23,39 @@
             margin: 50px
         }
 
+        .postingbox {
+            background-color: rgba(244, 246, 130, 0.896);
+            /* 배경색과 투명도로 살짝 어둡지만 투명한 배경
+            허공에 붕 떠있는 느낌을 주고 싶으면 안넣어도 무방 */
+            justify-content: center;
+            /*수평 중앙정렬*/
+            align-items: center;
+            /*수직 중앙정렬*/
+            position: fixed;
+            /*포지션 픽스, 화면이 스크롤되더라도 고정되기 위함*/
+            top: 0;
+            left: 0;
+            right: 0;
+            /*아래를 제외하고 화면을 꽉 채움*/
+
+           
+            
+        }
+
+        .postingbox {
+
+            width: 100%;
+            max-width: 500px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 30px auto 0px auto;
+            padding: 20px;
+            box-shadow: 5px 10px 10px 1px rgba(0, 0, 0, .3);
+        }
+
+
         #fvImg {
-            display: flex
+            display: flex;
         }
 
         #fvImg img {
@@ -32,13 +63,7 @@
             margin: 30px 50px 0px 0px;
         }
 
-        .postingbox {
 
-            width: 500px;
-            margin: 30px auto 0px auto;
-            padding: 20px;
-            box-shadow: 0px 0px 3px 0px green;
-        }
 
         .mybtn {
             display: flex;
@@ -51,8 +76,8 @@
             margin-right: 10px;
         }
     </style>
-    
-    
+
+
 
 
     <script type="module">
@@ -107,10 +132,10 @@
 
         $(document).ready(function () {
             $("#editButton").click(async function () {
-                if($('#editview').css('display') ==='none') // editview의 display가 none일때(화면에 보이지 않을때)
-                $('#editview').fadeIn(); // fadein 연출
-                
-                
+                if ($('#editview').css('display') === 'none') // editview의 display가 none일때(화면에 보이지 않을때)
+                    $('#editview').fadeIn(); // fadein 연출
+
+
             });
             $("#closeButton").click(async function () {
                 $('#editview').fadeOut(); // 닫기 버튼 누를시 fadeout
@@ -138,7 +163,7 @@
                 })
                 alert("saved!");
                 window.location.reload();
-                
+
             });
         });
     </script>
