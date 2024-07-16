@@ -6,7 +6,9 @@
 	<meta name="viewport" content="width=device-width">
 	<title>Project IAM</title>
 	<!-- <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico"> -->
-
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 	<!-- css -->
 	<link rel="stylesheet" href="resource/css/main.css">
 	<link rel="stylesheet" href="resource/css/sub.css">
@@ -27,6 +29,25 @@
 		#fvImg img {
 			float: left;
 			margin: 30px 50px 0px 0px;
+		}
+
+		.postingbox{
+			
+			width: 500px;
+			margin: 30px auto 0px auto;
+			padding: 20px;
+			box-shadow: 0px 0px 3px 0px green;
+		}
+
+		.mybtn {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.mybtn>button {
+			margin-right: 10px;
 		}
 	</style>
 
@@ -69,7 +90,7 @@
 		var motivation = document.getElementById("motivation");
 		var goal = document.getElementById("goal");
 		var github_add = document.getElementById("github_add");
-		var blog_add = document.getElementById("blog_add");
+
 
 		name.innerText = memData['name'];
 		birth.innerText = memData['birthday'];
@@ -79,8 +100,12 @@
 		goal.innerText = memData['goal'];
 		github_add.innerText = memData['github_add'];
 		blog_add.innerText = memData['blog_add'];
-		
 
+		$(document).ready(function () {
+			$("#editButton").click(async function () {
+				$('#editview').toggle();
+			});
+		});
 	</script>
 
 </head>
@@ -109,7 +134,7 @@
 			</div>
 
 			<div class="btn_box">
-				<a href="#none" class="btn_bace1">수정하기</a>
+				<button class="btn_bace1" id="editButton">수정하기</a>
 			</div>
 
 			<ul>
@@ -121,9 +146,54 @@
 				</li>
 			</ul>
 
+
 		</div>
 	</div>
 	</div>
+
+	<div class="postingbox" id="editview">
+		<div class="form-floating mb-3">
+			<input type="email" class="form-control" id="image" placeholder="이름">
+			<label for="floatingInput">이름</label>
+		</div>
+		<div class="form-floating mb-3">
+			<input type="email" class="form-control" id="title" placeholder="생년월일">
+			<label for="floatingInput">생년월일</label>
+		</div>
+		<div class="form-floating mb-3">
+			<input type="email" class="form-control" id="content" placeholder="MBTI">
+			<label for="floatingInput">MBTI</label>
+		</div>
+		<div class="form-floating mb-3">
+			<input type="email" class="form-control" id="date" placeholder="소개">
+			<label for="floatingInput">소개</label>
+		</div>
+		<div class="form-floating mb-3">
+			<input type="email" class="form-control" id="date" placeholder="소개">
+			<label for="floatingInput">동기</label>
+		</div>
+		<div class="form-floating mb-3">
+			<input type="email" class="form-control" id="date" placeholder="동기">
+			<label for="floatingInput">목표</label>
+		</div>
+		<div class="form-floating mb-3">
+			<input type="email" class="form-control" id="date" placeholder="목표">
+			<label for="floatingInput">깃허브</label>
+		</div>
+		<div class="form-floating mb-3">
+			<input type="email" class="form-control" id="date" placeholder="깃허브">
+			<label for="floatingInput">깃허브</label>
+		</div>
+		
+		<div class="mybtn">
+			<button type="button" class="btn btn-dark" id="postingbtn">완료</button>
+			<button type="button" class="btn btn-outline-dark">닫기</button>
+		</div>
+	</div>
+
+
+
+
 </body>
 
 </html>
