@@ -2,197 +2,379 @@
 <html lang="ko">
 
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width">
-	<title>Project IAM</title>
-	<!-- <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico"> -->
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-	<!-- css -->
-	<link rel="stylesheet" href="resource/css/main.css">
-	<link rel="stylesheet" href="resource/css/sub.css">
-	<link rel="stylesheet" href="resource/css/reset.css">
-	<!-- //css -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Project IAM</title>
+    <!-- <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico"> -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- css -->
+    <link rel="stylesheet" href="resource/css/main.css">
+    <link rel="stylesheet" href="resource/css/sub.css">
+    <link rel="stylesheet" href="resource/css/reset.css">
+    <link rel="stylesheet" href="resource/css/guestbook.css">
+    <!-- //css -->
 
-	<!-- script -->
-	<!-- //script -->
-	<style>
-		.text {
-			margin: 50px
-		}
+    <!-- script -->
+    <!-- //script -->
+    <style>
+        .text {
+            margin: 50px
+        }
 
-		#fvImg {
-			display: flex
-		}
+        #fvImg {
+            display: flex
+        }
 
-		#fvImg img {
-			float: left;
-			margin: 30px 50px 0px 0px;
-		}
+        #fvImg img {
+            float: left;
+            margin: 30px 50px 0px 0px;
+        }
 
-		.postingbox{
-			
-			width: 500px;
-			margin: 30px auto 0px auto;
-			padding: 20px;
-			box-shadow: 0px 0px 3px 0px green;
-		}
+        .postingbox {
 
-		.mybtn {
-			display: flex;
-			flex-direction: row;
-			align-items: center;
-			justify-content: center;
-		}
+            width: 500px;
+            margin: 30px auto 0px auto;
+            padding: 20px;
+            box-shadow: 0px 0px 3px 0px green;
+        }
 
-		.mybtn>button {
-			margin-right: 10px;
-		}
-	</style>
+        .mybtn {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+        }
 
-	<script type="module">
-		// Firebase SDK 라이브러리 가져오기
-		import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-		import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-		import { collection, addDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-		//import { getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-		import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        .mybtn>button {
+            margin-right: 10px;
+        }
+    </style>
 
-		// Firebase 구성 정보 설정
-		// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-		const firebaseConfig = {
-			apiKey: "AIzaSyA5smZZa0P2GVnlah19fJbnVL57ua_z5yE",
-			authDomain: "iamproject-51794.firebaseapp.com",
-			databaseURL: "https://iamproject-51794-default-rtdb.firebaseio.com",
-			projectId: "iamproject-51794",
-			storageBucket: "iamproject-51794.appspot.com",
-			messagingSenderId: "728757804100",
-			appId: "1:728757804100:web:3bd7a52565f60a82773011",
-			measurementId: "G-2V8SR7J9PQ"
-		};
+    <script type="module">
+        // Firebase SDK 라이브러리 가져오기
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { collection, addDoc, doc, getCountFromServer, getDoc, updateDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        // Firebase 구성 정보 설정
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyA5smZZa0P2GVnlah19fJbnVL57ua_z5yE",
+            authDomain: "iamproject-51794.firebaseapp.com",
+            databaseURL: "https://iamproject-51794-default-rtdb.firebaseio.com",
+            projectId: "iamproject-51794",
+            storageBucket: "iamproject-51794.appspot.com",
+            messagingSenderId: "728757804100",
+            appId: "1:728757804100:web:3bd7a52565f60a82773011",
+            measurementId: "G-2V8SR7J9PQ"
+        };
 
-		// Firebase 인스턴스 초기화
-		const app = initializeApp(firebaseConfig);
-		const db = getFirestore(app);
-
-
-		// member0,1,2,3,4 까지 변경하면 인원별로 변경됨
-		const memDoc = await getDoc(doc(db, 'iam', 'member0'));
-		const memData = memDoc.data();
-
-		console.log(memData);
-
-		var name = document.getElementById("name");
-		var birth = document.getElementById("birthday");
-		var mbti = document.getElementById("mbti");
-		var introduce = document.getElementById("introduce");
-		var motivation = document.getElementById("motivation");
-		var goal = document.getElementById("goal");
-		var github_add = document.getElementById("github_add");
+        // Firebase 인스턴스 초기화
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
 
-		name.innerText = memData['name'];
-		birth.innerText = memData['birthday'];
-		mbti.innerText = memData['mbti'];
-		introduce.innerText = memData['introduce'];
-		motivation.innerText = memData['motivation'];
-		goal.innerText = memData['goal'];
-		github_add.innerText = memData['github_add'];
-		blog_add.innerText = memData['blog_add'];
+        // member0,1,2,3,4 까지 변경하면 인원별로 변경됨
+        const memDoc = await getDoc(doc(db, 'iam', 'member0'));
+        const memData = memDoc.data();
 
-		$(document).ready(function () {
-			$("#editButton").click(async function () {
-				$('#editview').toggle();
-			});
-		});
-	</script>
+        console.log(memData);
+
+        var name = document.getElementById("name");
+        var birth = document.getElementById("birthday");
+        var mbti = document.getElementById("mbti");
+        var introduce = document.getElementById("introduce");
+        var motivation = document.getElementById("motivation");
+        var goal = document.getElementById("goal");
+        var github_add = document.getElementById("github_add");
+
+
+        name.innerText = memData['name'];
+        birth.innerText = memData['birthday'];
+        mbti.innerText = memData['mbti'];
+        introduce.innerText = memData['introduce'];
+        motivation.innerText = memData['motivation'];
+        goal.innerText = memData['goal'];
+        github_add.innerText = memData['github_add'];
+        blog_add.innerText = memData['blog_add'];
+
+        $(document).ready(function () {
+            $("#editButton").click(async function () {
+                $('#editview').toggle();
+            });
+        });
+
+        /*-------------------------------------- 방명록 스크립트 -------------------------------------------*/
+        // 쿼리스트링 파싱
+        const url = new URL(location.href);
+        const urlParams = url.searchParams;
+        const currentId = urlParams.get("id")
+        console.log(currentId)
+
+        const snapshot = await getCountFromServer(collection(db, "comments"));
+        const count = snapshot.data().count;
+
+        /*--------------- db에 없으면 문구 나오게  ---------------*/
+        if (count == 0) {
+            $(".empty_comment").show();
+        }
+        else {
+            $(".empty_comment").hide();
+        }
+
+        /*--------------- 댓글 등록 이벤트 등록 ---------------*/
+        addSubmitEventListener();
+
+        /*--------------- db 댓글 불러오기  ---------------*/
+        await loadComments(currentId);
+
+        /*--------------- 댓글 삭제 이벤트 등록  ---------------*/
+        await addDeleteEventListener($('.delete'));
+
+        /*--------------- 함수 구현 부 ---------------*/
+        function getCollectionRef() {
+            return collection(db, "comments");
+        }
+
+        async function loadComments(id) {
+            let docSnap = await getDoc(doc(getCollectionRef(), id));
+            console.log(docSnap)
+            let data = docSnap.data();
+            if (data['comment_list'] != null) {
+                data['comment_list'].forEach(row => {
+                    let name = row['name']
+                    let password = row['password']
+                    let contents = row['contents']
+                    let time = row['time']
+
+
+                    $('#comment_list').append(
+                        `
+                <div class="comment">
+                    <div class="comment_info">
+                        <p>작성자: <span class="comment_list_name">${name}</span></p>
+                        <span class="comment_created_time">${time}</span>
+                    </div>
+                    <div
+                        style="width: 100%; height: 2px; background-color: rgb(183, 183, 183); opacity: 0.5; border-radius: 2px;">
+                    </div>
+                    <div class="comment_text_wrapper"><span class="comment_text">${contents}</span></div>
+                    <div class="delete_btn_wrapper">
+                        <button class="delete-button delete">
+                            <svg class="delete-svgIcon" viewBox="0 0 448 512">
+                                <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `);
+                });
+            }
+
+        }
+
+        function addSubmitEventListener() {
+            $("#submit").click(async function () {
+                const name = $("#comment_name").val();
+                const password = $("#comment_password").val();
+                const contents = $("#comment_area").val();
+                let boolean = true;
+                let today = new Date();
+                const time = today.toLocaleString();
+
+                let dic = {
+                    'name': name,
+                    'password': password,
+                    'contents': contents,
+                    'time': time,
+                };
+
+                const docRef = doc(getCollectionRef(), currentId);
+                if (docRef == null) return;
+
+                const docSnap = await getDoc(docRef);
+                if (name === "" || contents === "") {
+                    alert("이름 혹은 내용이 비어있습니다.");
+                    return;
+                }
+
+                console.log(docSnap)
+                const numberOfKeys = Object.keys(docSnap.data()).length;
+                let list = [];
+                console.log(numberOfKeys)
+                if (numberOfKeys === 0) {
+                    list.push(dic);
+                    let newDoc = {
+                        'comment_list': list
+                    }
+                    await updateDoc(docRef, newDoc);
+                }
+                else {
+                    list = docSnap.data()['comment_list'];
+                    list.push(dic);
+                    let newDoc = {
+                        'comment_list': list
+                    }
+                    await updateDoc(docRef, newDoc);
+                }
+
+                alert('저장 완료!');
+                window.location.reload();
+                return;
+            });
+        }
+
+        async function addDeleteEventListener(node) {
+            node.off().on('click', async function (e) {
+                var ok = window.confirm("삭제하시겠습니까?");
+                var getpass = prompt("비밀번호를 입력하세요.");
+
+                if (ok) {
+                    let writer = e.target.parentElement.parentElement.children[0].children[0].children[0].textContent;
+                    let contents = e.target.parentElement.parentElement.children[2].children[0].textContent;
+                    let password = "";
+                    let createdTime = ""
+                    let del = null;
+                    let docRef = doc(getCollectionRef(), currentId);
+                    let docSnap = await getDoc(docRef);
+                    let commentList = docSnap.data()['comment_list'];
+                    let find = -1
+                    for (let i = commentList.length - 1; i >= 0; --i) {
+                        if (commentList[i]['name'] === writer && commentList[i]['contents'] === contents && getpass === commentList[i]['password']) {
+                            find = i;
+                            break;
+                        }
+                    }
+
+                    if (find == -1) {
+                        alert('비밀번호가 다릅니다.');
+                        return;
+                    }
+
+                    commentList.splice(find, 1);
+                    let newDoc = {
+                        'comment_list': commentList
+                    }
+                    alert('삭제 완료!');
+                    await updateDoc(docRef, newDoc);
+                    window.location.reload();
+                }
+            });
+        }
+    </script>
 
 </head>
 
 <body style="background: #f9f9f9;">
 
-	<div id="wrapper">
-		<div class="prof_wrap">
-			<div class="prof_box">
-				<div class="img"><img src="resource/img/img1.png" alt=""></div>
-				<div class="text">
-					<ul>
-						<li><strong>이름</strong><em id="name">누구</em></li><br>
-						<li><strong>생년월일</strong><em id="birthday" class="birthdate">1999.02.05</em></li><br>
-						<li><strong>MBTI</strong><em id="mbti" class="mbti">ISTP</em></li><br>
-						<li><strong>소개</strong><em id="introduce" class="introduce">안녕하세요</em></li><br>
-						<li><strong>동기</strong><em id="motivation" class="motive">안녕하세요</em></li><br>
-						<li><strong>목표</strong><em id="goal" class="goal">안녕하세요</em></li><br>
-						<li><strong>깃허브</strong><em id="github_add" class="github">안녕하세요</em></li><br>
-						<li><strong>블로그</strong><em id="blog_add" class="blog">안녕하세요</em></li>
+    <div id="wrapper">
+        <div class="prof_wrap">
+            <div class="prof_box">
+                <div class="img"><img src="resource/img/img1.png" alt=""></div>
+                <div class="text">
+                    <ul>
+                        <li><strong>이름</strong><em id="name">누구</em></li><br>
+                        <li><strong>생년월일</strong><em id="birthday" class="birthdate">1999.02.05</em></li><br>
+                        <li><strong>MBTI</strong><em id="mbti" class="mbti">ISTP</em></li><br>
+                        <li><strong>소개</strong><em id="introduce" class="introduce">안녕하세요</em></li><br>
+                        <li><strong>동기</strong><em id="motivation" class="motive">안녕하세요</em></li><br>
+                        <li><strong>목표</strong><em id="goal" class="goal">안녕하세요</em></li><br>
+                        <li><strong>깃허브</strong><em id="github_add" class="github">안녕하세요</em></li><br>
+                        <li><strong>블로그</strong><em id="blog_add" class="blog">안녕하세요</em></li>
 
 
-					</ul>
-				</div>
+                    </ul>
+                </div>
 
-			</div>
+            </div>
 
-			<div class="btn_box">
-				<button class="btn_bace1" id="editButton">수정하기</a>
-			</div>
+            <div class="btn_box">
+                <button class="btn_bace1" id="editButton">수정하기</a>
+            </div>
 
-			<ul>
-				<li id="fvImg">
-					<div class="Img1"><img src="resource/img/teemo.jpg" height=200px></div>
-					<div class="Img2"><img src="resource/img/teemo.jpg" height=200px></div>
-					<div class="Img3"><img src="resource/img/teemo.jpg" height=200px></div>
-					<div class="Img4"><img src="resource/img/teemo.jpg" height=200px></div>
-				</li>
-			</ul>
-
-
-		</div>
-	</div>
-	</div>
-
-	<div class="postingbox" id="editview">
-		<div class="form-floating mb-3">
-			<input type="email" class="form-control" id="image" placeholder="이름">
-			<label for="floatingInput">이름</label>
-		</div>
-		<div class="form-floating mb-3">
-			<input type="email" class="form-control" id="title" placeholder="생년월일">
-			<label for="floatingInput">생년월일</label>
-		</div>
-		<div class="form-floating mb-3">
-			<input type="email" class="form-control" id="content" placeholder="MBTI">
-			<label for="floatingInput">MBTI</label>
-		</div>
-		<div class="form-floating mb-3">
-			<input type="email" class="form-control" id="date" placeholder="소개">
-			<label for="floatingInput">소개</label>
-		</div>
-		<div class="form-floating mb-3">
-			<input type="email" class="form-control" id="date" placeholder="동기">
-			<label for="floatingInput">동기</label>
-		</div>
-		<div class="form-floating mb-3">
-			<input type="email" class="form-control" id="date" placeholder="목표">
-			<label for="floatingInput">목표</label>
-		</div>
-		<div class="form-floating mb-3">
-			<input type="email" class="form-control" id="date" placeholder="깃허브">
-			<label for="floatingInput">깃허브</label>
-		</div>
-		<div class="form-floating mb-3">
-			<input type="email" class="form-control" id="date" placeholder="블로그">
-			<label for="floatingInput">블로그</label>
-		</div>
-		
-		<div class="mybtn">
-			<button type="button" class="btn btn-dark" id="postingbtn">완료</button>
-			<button type="button" class="btn btn-outline-dark">닫기</button>
-		</div>
-	</div>
+            <ul>
+                <li id="fvImg">
+                    <div class="Img1"><img src="resource/img/teemo.jpg" height=200px></div>
+                    <div class="Img2"><img src="resource/img/teemo.jpg" height=200px></div>
+                    <div class="Img3"><img src="resource/img/teemo.jpg" height=200px></div>
+                    <div class="Img4"><img src="resource/img/teemo.jpg" height=200px></div>
+                </li>
+            </ul>
 
 
+        </div>
+    </div>
+    </div>
 
+    <div class="postingbox" id="editview">
+        <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="image" placeholder="이름">
+            <label for="floatingInput">이름</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="title" placeholder="생년월일">
+            <label for="floatingInput">생년월일</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="content" placeholder="MBTI">
+            <label for="floatingInput">MBTI</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="date" placeholder="소개">
+            <label for="floatingInput">소개</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="date" placeholder="동기">
+            <label for="floatingInput">동기</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="date" placeholder="목표">
+            <label for="floatingInput">목표</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="date" placeholder="깃허브">
+            <label for="floatingInput">깃허브</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="date" placeholder="블로그">
+            <label for="floatingInput">블로그</label>
+        </div>
+
+        <div class="mybtn">
+            <button type="button" class="btn btn-dark" id="postingbtn">완료</button>
+            <button type="button" class="btn btn-outline-dark">닫기</button>
+        </div>
+    </div>
+
+    <div class="comment_container_wrapper">
+        <div class="comment_container">
+            <div class="comment_writer_info">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="comment_name" placeholder="@@@">
+                    <label for="floatingInputDisabled" id="comment_name_txt">Name</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control" id="comment_password" placeholder="@@@">
+                    <label for="floatingInputDisabled" id="comment_name_txt">Password</label>
+                </div>
+            </div>
+            <div class="form-floating mb-3 comment_area">
+                <textarea class="form-control" placeholder="Leave a comment here" style="height: 100px"
+                    id="comment_area"></textarea>
+                <label for="floatingTextarea2Disabled">Comments</label>
+            </div>
+            <div class="btn_area">
+                <input class="btn btn-primary" id="submit" type="submit" value="등록">
+            </div>
+        </div>
+        <div class="comment_list" id="comment_list">
+            <div class="empty_comment" style="display: none;">
+                <p>방명록을 작성해주세요</p>
+            </div>
+        </div>
+    </div>
 
 </body>
 
