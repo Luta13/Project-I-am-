@@ -82,7 +82,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
         import { getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-        import { getCountFromServer, collection, addDoc, doc, getDoc, updateDoc, setDoc, deleteDoc  } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getCountFromServer, collection, addDoc, doc, getDoc, updateDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         // Firebase 구성 정보 설정
         // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -162,23 +162,25 @@
 
             });
         });
-        
-                /*-------------------------------------- 방명록 스크립트 -------------------------------------------*/
+
+        /*-------------------------------------- 방명록 스크립트 -------------------------------------------*/
         // 쿼리스트링 파싱
         const url = new URL(location.href);
         const urlParams = url.searchParams;
         const currentId = urlParams.get("id")
         console.log(currentId)
 
-        const snapshot = await getCountFromServer(collection(db, "comments"));
-        const count = snapshot.data().count;
-
-        /*--------------- db에 없으면 문구 나오게  ---------------*/
-        if (count == 0) {
-            $(".empty_comment").show();
-        }
-        else {
-            $(".empty_comment").hide();
+        let docSnap = await getDoc(doc(getCollectionRef(), currentId));
+        let data = docSnap.data();
+        let comments = data['comment_list'];
+        if (comments != null) {
+            /*--------------- db에 없으면 문구 나오게  ---------------*/
+            if (comments.length == 0) {
+                $(".empty_comment").show();
+            }
+            else {
+                $(".empty_comment").hide();
+            }
         }
 
         /*--------------- 댓글 등록 이벤트 등록 ---------------*/
@@ -197,7 +199,6 @@
 
         async function loadComments(id) {
             let docSnap = await getDoc(doc(getCollectionRef(), id));
-            console.log(docSnap)
             let data = docSnap.data();
             if (data['comment_list'] != null) {
                 data['comment_list'].forEach(row => {
