@@ -121,6 +121,7 @@
 
         console.log(memData);
 
+        
         var name = document.getElementById("name");
         var birth = document.getElementById("birthday");
         var mbti = document.getElementById("mbti");
@@ -129,6 +130,7 @@
         var goal = document.getElementById("goal");
         var github_add = document.getElementById("github_add");
 
+        $("#profile_img").attr('src', memData['image']);
         name.innerText = memData['name'];
         birth.innerText = memData['birthday'];
         mbti.innerText = memData['mbti'];
@@ -344,7 +346,7 @@
     <div id="wrapper">
         <div class="prof_wrap">
             <div class="prof_box">
-                <div class="img"><img src="resource/img/img1.png" alt=""></div>
+                <div class="img"><img id="profile_img" src="resource/img/img1.png" alt=""></div>
                 <div class="text">
                     <ul>
                         <li><strong>이름</strong><em id="name"></em></li><br>
