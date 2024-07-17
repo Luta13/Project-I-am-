@@ -53,7 +53,8 @@
     margin: 20px auto 0px auto;
     border-radius: 5px;
     padding: 5px;
-    box-shadow: 0px 0px 10px gray;
+    box-shadow: 0px 0px 10px #122737;
+    background-color: white;
 }
 
 .comment_container .comment_writer_info {
