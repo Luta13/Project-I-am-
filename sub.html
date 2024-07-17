@@ -102,8 +102,13 @@
         const db = getFirestore(app);
 
 
+        // 쿼리스트링 파싱
+        const url = new URL(location.href);
+        const urlParams = url.searchParams;
+        const currentId = urlParams.get("id")
+
         // member0,1,2,3,4 까지 변경하면 인원별로 변경됨
-        const memDoc = await getDoc(doc(db, 'iam', 'member4'));
+        const memDoc = await getDoc(doc(db, 'iam', currentId));
         const memData = memDoc.data();
 
         console.log(memData);
@@ -126,50 +131,51 @@
         blog_add.innerText = memData['blog_add'];
 
 
-        $(document).ready(function () {
-            $("#editButton").click(async function () {
-                if ($('#editview').css('display') === 'none') // editview의 display가 none일때(화면에 보이지 않을때)
-                    $('#editview').fadeIn(); // fadein 연출
+        $("#editButton").click(async function () {
+            if ($('#editview').css('display') === 'none') // editview의 display가 none일때(화면에 보이지 않을때)
+                $('#editview').fadeIn(); // fadein 연출
 
+            // 기존 데이터 적어놓기
+            $("#input_name").val(memData['name']);
+            $("#input_birthday").val(memData['birthday']);
+            $("#input_mbti").val(memData['mbti']);
+            $("#input_introduce").val(memData['introduce']);
+            $("#input_motivation").val(memData['motivation']);
+            $("#input_goal").val(memData['goal']);
+            $("#input_github_add").val(memData['github_add']);
+            $("#input_blog_add").val(memData['blog_add']);
+        });
 
-            });
-            $("#closeButton").click(async function () {
-                $('#editview').fadeOut(); // 닫기 버튼 누를시 fadeout
-            });
-            $("#postingButton").click(async function () {
+        $("#closeButton").click(async function () {
+            $('#editview').fadeOut(); // 닫기 버튼 누를시 fadeout
+        });
 
-                let input_name = $("#input_name").val();
-                let input_birth = $("#input_birthday").val();
-                let input_mbti = $("#input_mbti").val();
-                let input_introduce = $("#input_introduce").val();
-                let input_motivation = $("#input_motivation").val();
-                let input_goal = $("#input_goal").val();
-                let input_github_add = $("#input_github_add").val();
-                let input_blog_add = $("#input_blog_add").val();
+        $("#postingButton").click(async function () {
 
-                await setDoc(doc(db, "iam", "member4"), {
-                    name: input_name,
-                    birthday: input_birth,
-                    mbti: input_mbti,
-                    introduce: input_introduce,
-                    motivation: input_motivation,
-                    goal: input_goal,
-                    github_add: input_github_add,
-                    blog_add: input_blog_add
-                })
-                alert("saved!");
-                window.location.reload();
+            let input_name = $("#input_name").val();
+            let input_birth = $("#input_birthday").val();
+            let input_mbti = $("#input_mbti").val();
+            let input_introduce = $("#input_introduce").val();
+            let input_motivation = $("#input_motivation").val();
+            let input_goal = $("#input_goal").val();
+            let input_github_add = $("#input_github_add").val();
+            let input_blog_add = $("#input_blog_add").val();
 
-            });
+            await setDoc(doc(db, "iam", currentId), {
+                name: input_name,
+                birthday: input_birth,
+                mbti: input_mbti,
+                introduce: input_introduce,
+                motivation: input_motivation,
+                goal: input_goal,
+                github_add: input_github_add,
+                blog_add: input_blog_add
+            })
+            alert("saved!");
+            window.location.reload();
         });
 
         /*-------------------------------------- 방명록 스크립트 -------------------------------------------*/
-        // 쿼리스트링 파싱
-        const url = new URL(location.href);
-        const urlParams = url.searchParams;
-        const currentId = urlParams.get("id")
-        console.log(currentId)
-
         let docSnap = await getDoc(doc(getCollectionRef(), currentId));
         let data = docSnap.data();
         let comments = data['comment_list'];
