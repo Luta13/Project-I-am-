@@ -147,7 +147,7 @@
 
         $("#editButton").click(async function () {
             if ($('#editview').css('display') === 'none') // editview의 display가 none일때(화면에 보이지 않을때)
-                $('#editview').fadeIn(); // fadein 연출
+                $('#editview').fadeIn(); // fadein 연출     
 
             // 기존 데이터 적어놓기
             $("#input_name").val(memData['name']);
@@ -162,6 +162,12 @@
 
         $("#closeButton").click(async function () {
             $('#editview').fadeOut(); // 닫기 버튼 누를시 fadeout
+        });
+        $("#backButton").click(async function()
+        {
+            
+            location.href='index.html';
+           
         });
 
         $("#postingButton").click(async function () {
@@ -349,7 +355,7 @@
 
 <body style="background: #516E70;">
 
-    <div id="wrapper">
+    <div id="wrapper" id="subPage">
         <div class="prof_wrap">
             <div class="prof_box">
                 <div class="img"><img id="profile_img" src="resource/img/img1.png" alt=""></div>
@@ -370,7 +376,7 @@
 
             </div>
             <div class="btn_box">
-                <button class="btn_bace1" onclick="history.back()">돌아가기</a>
+                <button class="btn_bace1" id="backButton">돌아가기</a>
             </div>
             <div class="btn_box">
                 <button class="btn_bace1" id="editButton">수정하기</a>
