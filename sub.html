@@ -129,6 +129,7 @@
         var motivation = document.getElementById("motivation");
         var goal = document.getElementById("goal");
         var github_add = document.getElementById("github_add");
+        
 
         $("#profile_img").attr('src', memData['image']);
         name.innerText = memData['name'];
@@ -139,6 +140,7 @@
         goal.innerText = memData['goal'];
         github_add.innerText = memData['github_add'];
         blog_add.innerText = memData['blog_add'];
+        const profile_img_url = memData['image'];
 
 
         $("#editButton").click(async function () {
@@ -172,6 +174,7 @@
             let input_blog_add = $("#input_blog_add").val();
 
             await setDoc(doc(db, "iam", currentId), {
+                image: profile_img_url,
                 name: input_name,
                 birthday: input_birth,
                 mbti: input_mbti,
